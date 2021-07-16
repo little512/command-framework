@@ -26,6 +26,16 @@ namespace CommandFramework.Parser
     }
 
     /// <summary>
+    /// An enum representing the status of an interpreted command.
+    /// </summary>
+    public enum CommandResult
+    {
+        CommandSucceeded,
+        CommandFailed,
+        CommandNotFound
+    }
+
+    /// <summary>
     /// The interface for CommandData objects.
     /// </summary>
     public interface ICommandData
@@ -84,10 +94,11 @@ namespace CommandFramework.Parser
         string Prefix { get; set; }
 
         /// <summary>
-        /// Interprets user input and returns a boolean indicating the success or failure of the command.
+        /// Interprets user input and returns a <see cref="CommandResult"/> representing
+        /// the result of the command.
         /// </summary>
         /// <param name="input">The user's input that will be parsed.</param>
-        bool InterpretUserInput(string input);
+        CommandResult InterpretUserInput(string input);
     }
 
     /// <summary>
@@ -109,7 +120,7 @@ namespace CommandFramework.Parser
             Prefix = prefix;
         }
 
-        public bool InterpretUserInput(string input)
+        public CommandResult InterpretUserInput(string input)
         {
             if (input.Substring(0, Prefix.Length).Equals(Prefix))
             {
@@ -123,18 +134,22 @@ namespace CommandFramework.Parser
                     switch (command.CaseSensitivity)
                     {
                         case CommandCaseSensitivity.CaseInvariant:
-                            return (bool) command.Method.Invoke(null, new object[] {input, this});
+                            return (bool) command.Method.Invoke(null, new object[] {input, this}) ?
+                                CommandResult.CommandSucceeded :
+                                CommandResult.CommandFailed;
 
                         case CommandCaseSensitivity.CaseSensitive:
                             if (commandName == command.Name)
-                                return (bool) command.Method.Invoke(null, new object[] {input, this});
+                                return (bool) command.Method.Invoke(null, new object[] {input, this}) ?
+                                    CommandResult.CommandSucceeded :
+                                    CommandResult.CommandFailed;
 
                             break;
                     }
                 }
             }
 
-            return false;
+            return CommandResult.CommandNotFound;
         }
 
         /// <summary>

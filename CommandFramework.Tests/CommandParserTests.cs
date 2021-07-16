@@ -59,7 +59,7 @@ namespace CommandFramework.Tests
         [InlineData("!CaseSensitive")]
         public void CommandFramework_CommandParser_InterpretUserInput(string input)
         {
-            Assert.True(commands.InterpretUserInput(input));
+            Assert.True(commands.InterpretUserInput(input) == CommandResult.CommandSucceeded);
         }
 
         [Theory]
@@ -72,7 +72,7 @@ namespace CommandFramework.Tests
             var oldPrefix = commands.Prefix;
 
             commands.Prefix = prefix;
-            Assert.True(commands.InterpretUserInput(input));
+            Assert.True(commands.InterpretUserInput(input) == CommandResult.CommandSucceeded);
 
             commands.Prefix = oldPrefix;
         }
@@ -101,7 +101,7 @@ namespace CommandFramework.Tests
         [InlineData("!caseSensitive")]
         public void CommandFramework_CommandParser_EnsureCaseSensitiveCommandsFail(string input)
         {
-            Assert.False(commands.InterpretUserInput(input));
+            Assert.True(commands.InterpretUserInput(input) == CommandResult.CommandNotFound);
         }
     }
 }
