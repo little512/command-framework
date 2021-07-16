@@ -32,6 +32,14 @@ namespace CommandFramework.Tests
 
             return true;
         }
+
+        [Command(Name = "CaseSensitive", Description = "This command is case sensitive", CaseSensitivity = CommandCaseSensitivity.CaseSensitive)]
+        public static bool CaseSensitiveCommand(string input, ICommandParser _)
+        {
+            Console.WriteLine($"Case preserved input: {input}");
+
+            return true;
+        }
     }
 
     // TODO: write more tests
@@ -48,6 +56,7 @@ namespace CommandFramework.Tests
         [Theory]
         [InlineData("!test")]
         [InlineData("!help")]
+        [InlineData("!CaseSensitive")]
         public void CommandFramework_CommandParser_InterpretUserInput(string input)
         {
             Assert.True(commands.InterpretUserInput(input));
@@ -84,6 +93,15 @@ namespace CommandFramework.Tests
             ICommandData command;
 
             Assert.Throws<CommandNotFoundException>(() => command = commands.GetCommandByName(commandName));
+        }
+
+        [Theory]
+        [InlineData("!casesensitive")]
+        [InlineData("!Casesensitive")]
+        [InlineData("!caseSensitive")]
+        public void CommandFramework_CommandParser_EnsureCaseSensitiveCommandsFail(string input)
+        {
+            Assert.False(commands.InterpretUserInput(input));
         }
     }
 }

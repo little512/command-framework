@@ -17,6 +17,15 @@ namespace CommandFramework.Parser
     public delegate bool CommandMethod(string userInput, ICommandParser parser);
 
     /// <summary>
+    /// An enum representing the case variance of the given command.
+    /// </summary>
+    public enum CommandCaseSensitivity
+    {
+        CaseInvariant,
+        CaseSensitive
+    }
+
+    /// <summary>
     /// The interface for CommandData objects.
     /// </summary>
     public interface ICommandData
@@ -42,6 +51,11 @@ namespace CommandFramework.Parser
         /// </para>
         /// </summary>
         string Description { get; set; }
+
+        /// <summary>
+        /// The case variance of the given command.
+        /// </summary>
+        CommandCaseSensitivity CaseSensitivity { get; set; }
     }
 
     /// <summary>
@@ -55,6 +69,7 @@ namespace CommandFramework.Parser
         public MethodInfo Method { get; init; }
         public string Name { get; set; } 
         public string Description { get; set; }
+        public CommandCaseSensitivity CaseSensitivity { get; set; }
     }
 
     /// <summary>
@@ -101,9 +116,21 @@ namespace CommandFramework.Parser
                 var args = input.Split();
                 var commandName = args[0][Prefix.Length..];
 
-                if (_commands.ContainsKey(commandName))
+                if (_commands.ContainsKey(commandName.ToLower()))
                 {
-                    return (bool) _commands[commandName].Method.Invoke(null, new object[] {input, this});
+                    var command = _commands[commandName.ToLower()];
+
+                    switch (command.CaseSensitivity)
+                    {
+                        case CommandCaseSensitivity.CaseInvariant:
+                            return (bool) command.Method.Invoke(null, new object[] {input, this});
+
+                        case CommandCaseSensitivity.CaseSensitive:
+                            if (commandName == command.Name)
+                                return (bool) command.Method.Invoke(null, new object[] {input, this});
+
+                            break;
+                    }
                 }
             }
 
@@ -181,11 +208,12 @@ namespace CommandFramework.Parser
 
                 if (attr is not null && CheckMethodIsValidCommand(method))
                 {
-                    commandDictionary.Add(attr.Name, new CommandData
+                    commandDictionary.Add(attr.Name.ToLower(), new CommandData
                     {
                         Method = method,
                         Name = attr.Name,
-                        Description = attr.Description
+                        Description = attr.Description,
+                        CaseSensitivity = attr.CaseSensitivity
                     });
                 }
             }

@@ -1,5 +1,7 @@
 using System;
 
+using CommandFramework.Parser;
+
 namespace CommandFramework.Attributes
 {
     /// <summary>
@@ -23,6 +25,11 @@ namespace CommandFramework.Attributes
         /// to describe the utility of the command.
         /// </summary>
         public string Description { get; set; }
+
+        /// <summary>
+        /// The case variance of the given command.
+        /// </summary>
+        public CommandCaseSensitivity CaseSensitivity { get; set; } = CommandCaseSensitivity.CaseInvariant;
         
         public CommandAttribute() { }
     }
