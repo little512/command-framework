@@ -10,28 +10,35 @@ using CommandFramework.Exceptions;
 
 namespace CommandFramework.Parser
 {
-    public interface ICommandParser
-    {
-        string Prefix { get; set; }
-        bool InterpretUserInput(string input);
-    }
-
     public delegate bool CommandMethod(string userInput, ICommandParser parser);
 
-    public struct CommandData
+    public interface ICommandData
+    {
+        MethodInfo Method { get; init; }
+        string Name { get; set; }
+        string Description { get; set; }
+    }
+
+    public struct CommandData : ICommandData
     {
         public MethodInfo Method { get; init; }
         public string Name { get; set; } 
         public string Description { get; set; }
     }
 
+    public interface ICommandParser
+    {
+        string Prefix { get; set; }
+        bool InterpretUserInput(string input);
+    }
+
     public class CommandParser : ICommandParser
     {
-        private readonly Dictionary<string, CommandData> _commands;
+        private readonly Dictionary<string, ICommandData> _commands;
 
         public string Prefix { get; set; }
 
-        internal CommandParser(Dictionary<string, CommandData> commands, string prefix = "!")
+        internal CommandParser(Dictionary<string, ICommandData> commands, string prefix = "!")
         {
             _commands = commands;
 
@@ -54,7 +61,7 @@ namespace CommandFramework.Parser
             return false;
         }
 
-        public CommandData GetCommandByName(string name) =>
+        public ICommandData GetCommandByName(string name) =>
             _commands.ContainsKey(name) ?
                 _commands[name] :
                 throw new CommandNotFoundException($"No command by name {name}")
@@ -62,7 +69,7 @@ namespace CommandFramework.Parser
                     CommandName = name
                 };
 
-        public Dictionary<string, CommandData> GetCommands() =>
+        public Dictionary<string, ICommandData> GetCommands() =>
             _commands;
 
         public static IEnumerable<string> GetArgumentsFromUserInput(string input) =>
@@ -77,7 +84,7 @@ namespace CommandFramework.Parser
 
         public static CommandParser ConstructCommandParser<T>() where T : class
         {
-            Dictionary<string, CommandData> commandDictionary = new();
+            Dictionary<string, ICommandData> commandDictionary = new();
 
             var commandType = typeof(T);
             var methods = commandType.GetMethods();
