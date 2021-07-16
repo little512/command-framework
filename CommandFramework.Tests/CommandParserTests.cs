@@ -81,7 +81,7 @@ namespace CommandFramework.Tests
         [InlineData("nonsense")]
         public void CommandFramework_CommandParser_EnsureWrongNameThrows(string commandName)
         {
-            CommandData command;
+            ICommandData command;
 
             Assert.Throws<CommandNotFoundException>(() => command = commands.GetCommandByName(commandName));
         }
