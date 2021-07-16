@@ -2,9 +2,15 @@ using System;
 
 namespace CommandFramework.Exceptions
 {
+    /// <summary>
+    /// An exception which is thrown when a command is not found by functions that retrieve commands.
+    /// </summary>
     [System.Serializable]
     public class CommandNotFoundException : System.Exception
     {
+        /// <summary>
+        /// The name of the command which was attempted to be retrieved.
+        /// </summary>
         public string CommandName { get; set; }
 
         public CommandNotFoundException() { }
