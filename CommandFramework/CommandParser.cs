@@ -17,7 +17,7 @@ namespace CommandFramework.Parser
     public delegate bool CommandMethod(string userInput, ICommandParser parser);
 
     /// <summary>
-    /// An enum representing the case variance of the given command.
+    /// An enum representing the case sensitivity of the given command.
     /// </summary>
     public enum CommandCaseSensitivity
     {
@@ -53,7 +53,7 @@ namespace CommandFramework.Parser
         string Description { get; set; }
 
         /// <summary>
-        /// The case variance of the given command.
+        /// The case sensitivity of the given command.
         /// </summary>
         CommandCaseSensitivity CaseSensitivity { get; set; }
     }

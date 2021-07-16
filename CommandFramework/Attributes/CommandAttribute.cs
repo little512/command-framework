@@ -27,7 +27,7 @@ namespace CommandFramework.Attributes
         public string Description { get; set; }
 
         /// <summary>
-        /// The case variance of the given command.
+        /// The case sensitivity of the given command.
         /// </summary>
         public CommandCaseSensitivity CaseSensitivity { get; set; } = CommandCaseSensitivity.CaseInvariant;
         
